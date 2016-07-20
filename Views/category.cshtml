@@ -1,0 +1,21 @@
+<h1>@Model["category"].GetName() Recipes </h1>
+
+
+@foreach (var recipe in @Model["recipes"])
+{
+  <li><a href="/recipe/@recipe.GetId()">@recipe.GetName()</a></li>
+}
+
+
+<Form action = '/category/@Model["category"].GetId()/add-recipe' method = 'post'>
+  <label for="recipe-name">Recipe Name</label>
+  <input type="text" name="recipe-name">
+
+  <label for="recipe-description">Recipe Description</label>
+  <input type="text" name="recipe-description">
+
+  <label for="recipe-rating">Recipe Rating</label>
+  <input type="number" name="recipe-rating">
+
+  <button type="submit" name="name">add recipe to category</button>
+</form>

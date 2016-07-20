@@ -79,10 +79,10 @@ namespace Cookbook
       SqlDataReader rdr;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO categories (description) OUTPUT INSERTED.id VALUES (@CategoryDescription);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO categories (name) OUTPUT INSERTED.id VALUES (@CategoryName);", conn);
 
       SqlParameter nameParameter = new SqlParameter();
-      nameParameter.ParameterName = "@CategoryDescription";
+      nameParameter.ParameterName = "@CategoryName";
       nameParameter.Value = this.GetName();
       cmd.Parameters.Add(nameParameter);
       rdr = cmd.ExecuteReader();
@@ -165,55 +165,114 @@ namespace Cookbook
     public List<Recipe> GetRecipeByCategory()
     {
       SqlConnection conn = DB.Connection();
-      SqlDataReader rdr = null;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT recipe_id FROM recipe_category WHERE ingredient_id = @CategoryId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT recipes.* FROM categories JOIN recipe_category ON (categories.id = recipe_category.category_id) JOIN recipes ON (recipe_category.recipe_id = recipes.id) WHERE categories.id = @CategoryId", conn);
+      SqlParameter CategoryIdParam = new SqlParameter();
+      CategoryIdParam.ParameterName = "@CategoryId";
+      CategoryIdParam.Value = this.GetId().ToString();
+
+      cmd.Parameters.Add(CategoryIdParam);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      List<Recipe> recipes = new List<Recipe>{};
+
+      while(rdr.Read())
+      {
+        int recipeId = rdr.GetInt32(0);
+        string recipeName = rdr.GetString(1);
+        string recipeDescription = rdr.GetString(2);
+        int recipeRating = rdr.GetInt32(3);
+        Recipe newRecipe = new Recipe(recipeName, recipeDescription, recipeRating, recipeId);
+        recipes.Add(newRecipe);
+      }
+
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+      return recipes;
+    }
+    // public List<Recipe> GetRecipeByCategory()
+    // {
+    //   SqlConnection conn = DB.Connection();
+    //   SqlDataReader rdr = null;
+    //   conn.Open();
+    //
+    //   SqlCommand cmd = new SqlCommand("SELECT recipe_id FROM recipe_category WHERE category_id = @CategoryId;", conn);
+    //   SqlParameter categoryIdParameter = new SqlParameter();
+    //   categoryIdParameter.ParameterName = "@CategoryId";
+    //   categoryIdParameter.Value = this.GetId();
+    //   cmd.Parameters.Add(categoryIdParameter);
+    //
+    //   rdr = cmd.ExecuteReader();
+    //
+    //   List<int> recipeIds = new List<int> {};
+    //   while(rdr.Read())
+    //   {
+    //     int recipeId = rdr.GetInt32(0);
+    //     recipeIds.Add(recipeId);
+    //   }
+    //   if (rdr != null)
+    //   {
+    //     rdr.Close();
+    //   }
+    //
+    //   List<Recipe> recipes = new List<Recipe> {};
+    //   foreach (int recipeId in recipeIds)
+    //   {
+    //     SqlDataReader queryReader = null;
+    //     SqlCommand recipeQuery = new SqlCommand("SELECT * FROM recipes WHERE id = @RecipeId;", conn);
+    //
+    //     SqlParameter recipeIdParameter = new SqlParameter();
+    //     recipeIdParameter.ParameterName = "@RecipeId";
+    //     recipeIdParameter.Value = recipeId;
+    //     recipeQuery.Parameters.Add(recipeIdParameter);
+    //
+    //     queryReader = recipeQuery.ExecuteReader();
+    //     while (queryReader.Read())
+    //     {
+    //       int thisRecipeId = queryReader.GetInt32(0);
+    //       string recipeName = queryReader.GetString(1);
+    //       string recipeDescription = queryReader.GetString(2);
+    //       int recipeRating = queryReader.GetInt32(3);
+    //       Recipe foundRecipe = new Recipe(recipeName, recipeDescription, recipeRating, thisRecipeId);
+    //       recipes.Add(foundRecipe);
+    //     }
+    //     if (queryReader != null)
+    //     {
+    //       queryReader.Close();
+    //     }
+    //   }
+    //   return recipes;
+    // }
+    public void AddRecipeToCategory(Recipe newRecipe)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO recipe_category (category_id, recipe_id) VALUES (@CategoryId, @RecipeId)", conn);
       SqlParameter categoryIdParameter = new SqlParameter();
       categoryIdParameter.ParameterName = "@CategoryId";
       categoryIdParameter.Value = this.GetId();
       cmd.Parameters.Add(categoryIdParameter);
 
-      rdr = cmd.ExecuteReader();
+      SqlParameter recipeIdParameter = new SqlParameter();
+      recipeIdParameter.ParameterName = "@RecipeId";
+      recipeIdParameter.Value = newRecipe.GetId();
+      cmd.Parameters.Add(recipeIdParameter);
 
-      List<int> recipeIds = new List<int> {};
-      while(rdr.Read())
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
       {
-        int recipeId = rdr.GetInt32(0);
-        recipeIds.Add(recipeId);
+        conn.Close();
       }
-      if (rdr != null)
-      {
-        rdr.Close();
-      }
-
-      List<Recipe> recipes = new List<Recipe> {};
-      foreach (int recipeId in recipeIds)
-      {
-        SqlDataReader queryReader = null;
-        SqlCommand recipeQuery = new SqlCommand("SELECT * FROM recipes WHERE id = @RecipeId;", conn);
-
-        SqlParameter recipeIdParameter = new SqlParameter();
-        recipeIdParameter.ParameterName = "@RecipeId";
-        recipeIdParameter.Value = recipeId;
-        recipeQuery.Parameters.Add(recipeIdParameter);
-
-        queryReader = recipeQuery.ExecuteReader();
-        while (queryReader.Read())
-        {
-          int thisRecipeId = queryReader.GetInt32(0);
-          string recipeName = queryReader.GetString(1);
-          string recipeDescription = queryReader.GetString(2);
-          int recipeRating = queryReader.GetInt32(3);
-          Recipe foundRecipe = new Recipe(recipeName, recipeDescription, recipeRating, thisRecipeId);
-          recipes.Add(foundRecipe);
-        }
-        if (queryReader != null)
-        {
-          queryReader.Close();
-        }
-      }
-      return recipes;
     }
   }
 }

@@ -194,7 +194,7 @@ namespace Cookbook
       }
       return foundRecipe;
     }
-    public void AddCategory(Category newCategory)
+    public void AddCategory(int newCategoryId)
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
@@ -203,12 +203,12 @@ namespace Cookbook
 
       SqlParameter categoryIdParameter = new SqlParameter();
       categoryIdParameter.ParameterName = "@CategoryId";
-      categoryIdParameter.Value = this.GetId();
+      categoryIdParameter.Value = newCategoryId;
       cmd.Parameters.Add(categoryIdParameter);
 
       SqlParameter recipeIdParameter = new SqlParameter();
       recipeIdParameter.ParameterName = "@RecipeId";
-      recipeIdParameter.Value = newCategory.GetId();
+      recipeIdParameter.Value = this.GetId();
       cmd.Parameters.Add(recipeIdParameter);
 
       cmd.ExecuteNonQuery();
@@ -292,6 +292,105 @@ namespace Cookbook
         }
       }
       return ingredients;
+    }
+    public List<Category> GetCategoriesInRecipe()
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr = null;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT category_id FROM recipe_category WHERE recipe_id = @RecipeId;", conn);
+
+      SqlParameter recipeIdParameter = new SqlParameter();
+      recipeIdParameter.ParameterName = "@RecipeId";
+      recipeIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(recipeIdParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      List<int> categoryIds = new List<int> {};
+      while(rdr.Read())
+      {
+        int categoryId = rdr.GetInt32(0);
+        categoryIds.Add(categoryId);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+
+      List<Category> categories = new List<Category> {};
+      foreach (int categoryId in categoryIds)
+      {
+        SqlDataReader queryReader = null;
+        SqlCommand categoryQuery = new SqlCommand("SELECT * FROM categories WHERE id = @CategoryId;", conn);
+
+        SqlParameter categoryIdParameter = new SqlParameter();
+        categoryIdParameter.ParameterName = "@CategoryId";
+        categoryIdParameter.Value = categoryId;
+        categoryQuery.Parameters.Add(categoryIdParameter);
+
+        queryReader = categoryQuery.ExecuteReader();
+        while (queryReader.Read())
+        {
+          int thisCategoryId = queryReader.GetInt32(0);
+          string categoryName = queryReader.GetString(1);
+          Category foundCategory = new Category(categoryName, thisCategoryId);
+          categories.Add(foundCategory);
+        }
+        if (queryReader != null)
+        {
+          queryReader.Close();
+        }
+      }
+      return categories;
+    }
+    public void Update(string newName, string newDescription, int newRating)
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("UPDATE recipes SET name = @NewName, description = @NewDescription, rating = @NewRating OUTPUT INSERTED.name, INSERTED.description, INSERTED.rating WHERE id = @RecipeId;", conn);
+
+      SqlParameter newNameParameter = new SqlParameter();
+      newNameParameter.ParameterName = "@NewName";
+      newNameParameter.Value = newName;
+      cmd.Parameters.Add(newNameParameter);
+
+      SqlParameter newDescriptionParameter = new SqlParameter();
+      newDescriptionParameter.ParameterName = "@NewDescription";
+      newDescriptionParameter.Value = newDescription;
+      cmd.Parameters.Add(newDescriptionParameter);
+
+      SqlParameter newRatingParameter = new SqlParameter();
+      newRatingParameter.ParameterName = "@NewRating";
+      newRatingParameter.Value = newRating;
+      cmd.Parameters.Add(newRatingParameter);
+
+
+      SqlParameter recipeIdParameter = new SqlParameter();
+      recipeIdParameter.ParameterName = "@RecipeId";
+      recipeIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(recipeIdParameter);
+      rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        this._name = rdr.GetString(0);
+        this._description = rdr.GetString(1);
+        this._rating = rdr.GetInt32(2);
+      }
+
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
     }
   }
 }

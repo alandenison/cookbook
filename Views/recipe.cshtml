@@ -1,0 +1,36 @@
+<form action="/recipe/@Model["recipe"].GetId()/update" method = "post">
+  <input type="hidden" name="_method" value="PATCH">
+<input type = "text" name = "recipe-name" value = '@Model["recipe"].GetName()'></input>
+<hr>
+<input type = "text" name = "recipe-description" value = '@Model["recipe"].GetDescription()'></input>
+<br>
+
+<label for="rating">Rating:</rating>
+<input type="number" name="recipe-rating" value="@Model["recipe"].GetRating()">
+<br><button type="submit">Update</button>
+</form>
+
+
+<!-- <Form action = '/recipe/@Model["recipe"].GetId()/add-ingredient' method = 'post'>
+  <label for="ingredient-name">Ingredient Name</label>
+  <input type="text" name="ingredient-name">
+
+  <button type="submit" name="name">add ingredient to recipe</button>
+</form> -->
+
+<ul>
+@foreach (var category in @Model["categories"])
+{
+ <li>@category.GetName()</li>
+}
+</ul>
+
+<Form action = '/recipe/@Model["recipe"].GetId()/add-Category' method = 'post'>
+  <select  name="add-category">
+    @foreach (var category in @Model["allCategories"])
+    {
+      <option value = @category.GetId()>@category.GetName()</option>
+    }
+  </select>
+  <button type="submit" name="name">add category to recipe</button>
+</form>

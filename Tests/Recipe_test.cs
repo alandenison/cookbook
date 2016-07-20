@@ -130,7 +130,7 @@ namespace Cookbook.Objects
     }
 
     [Fact]
-    public void Test_Delete_DeletesTaskAssociationsFromDatabase()
+    public void Test_Delete_DeletesRecipeAssociationsFromDatabase()
     {
       //Arrange
       Ingredient testIngredient = new Ingredient("Kim chi");
@@ -149,6 +149,26 @@ namespace Cookbook.Objects
       //Assert
       Assert.Equal(testIngredientRecipes, resultIngredientRecipes);
     }
+    [Fact]
+    public void Test_Update_UpdatesRecipeInDatabase()
+    {
+      //Arrange
+      Recipe newRecipe = new Recipe("Korean tacos", "These tacos are delicious", 100);
+      newRecipe.Save();
+      string newName = "Korean Burrito";
+      string newDescription = "burrito from Korea";
+      int newRating = 99;
 
+      //Act
+      newRecipe.Update(newName, newDescription, newRating);
+      string resultNewName = newRecipe.GetName();
+      string resultNewDescription = newRecipe.GetDescription();
+      int resultNewRating = newRecipe.GetRating();
+
+      //Assert
+      Assert.Equal(newName, resultNewName);
+      Assert.Equal(newDescription, resultNewDescription);
+      Assert.Equal(newRating, resultNewRating);
+    }
   }
 }
