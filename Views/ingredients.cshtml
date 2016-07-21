@@ -1,0 +1,17 @@
+<h2>Ingredients</h2>
+<ul>
+  @foreach (var ingredient in @Model)
+{
+  <li><a href="/ingredient/@ingredient.GetId()">@ingredient.GetName()</a></li>
+}
+</ul>
+
+<Form action = "/add-ingredient" method = "post">
+  <label for="ingredient-name">Ingredient Name</label>
+  <input type="text" name="ingredient-name">
+  <button type="submit" name="name">add</button>
+</form>
+<a href="/">home</a>
+<form action="/delete-all-categories" method="post">
+  <button type="submit">Delete All</button>
+</form>

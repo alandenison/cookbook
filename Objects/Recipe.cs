@@ -70,7 +70,7 @@ namespace Cookbook
       SqlDataReader rdr = null;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM recipes;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM recipes ORDER BY rating DESC;", conn);
       rdr = cmd.ExecuteReader();
 
       while(rdr.Read())
@@ -218,7 +218,57 @@ namespace Cookbook
         conn.Close();
       }
     }
-    public void AddIngredient(Ingredient newIngredient)
+    public void DeleteCategoryFromRecipe(int categoryId)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM recipe_category WHERE category_id = @CategoryId AND recipe_id = @RecipeId", conn);
+
+      SqlParameter categoryIdParameter = new SqlParameter();
+      categoryIdParameter.ParameterName = "@CategoryId";
+      categoryIdParameter.Value = categoryId;
+      cmd.Parameters.Add(categoryIdParameter);
+
+      SqlParameter recipeIdParameter = new SqlParameter();
+      recipeIdParameter.ParameterName = "@RecipeId";
+      recipeIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(recipeIdParameter);
+
+
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+    public void DeleteIngredientFromRecipe(int ingredientId)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM recipe_ingredients WHERE ingredient_id = @IngredientId AND recipe_id = @RecipeId", conn);
+
+      SqlParameter ingredientIdParameter = new SqlParameter();
+      ingredientIdParameter.ParameterName = "@IngredientId";
+      ingredientIdParameter.Value = ingredientId;
+      cmd.Parameters.Add(ingredientIdParameter);
+
+      SqlParameter recipeIdParameter = new SqlParameter();
+      recipeIdParameter.ParameterName = "@RecipeId";
+      recipeIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(recipeIdParameter);
+
+
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+    public void AddIngredient(int newIngredientId)
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
@@ -226,7 +276,7 @@ namespace Cookbook
       SqlCommand cmd = new SqlCommand("INSERT INTO recipe_ingredients (ingredient_id, recipe_id) VALUES (@IngredientId, @RecipeId)", conn);
       SqlParameter ingredientIdParameter = new SqlParameter();
       ingredientIdParameter.ParameterName = "@IngredientId";
-      ingredientIdParameter.Value = newIngredient.GetId();
+      ingredientIdParameter.Value = newIngredientId;
       cmd.Parameters.Add(ingredientIdParameter);
 
       SqlParameter recipeIdParameter = new SqlParameter();

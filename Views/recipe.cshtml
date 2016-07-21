@@ -2,7 +2,8 @@
   <input type="hidden" name="_method" value="PATCH">
 <input type = "text" name = "recipe-name" value = '@Model["recipe"].GetName()'></input>
 <hr>
-<input type = "text" name = "recipe-description" value = '@Model["recipe"].GetDescription()'></input>
+<h2>INSTRUCTIONS:</h2>
+<textarea rows = "20" name = "recipe-description">@Model["recipe"].GetDescription()</textarea>
 <br>
 
 <label for="rating">Rating:</rating>
@@ -10,18 +11,20 @@
 <br><button type="submit">Update</button>
 </form>
 
+<h3>Key ingredients:</h3>
+<ul>
+  @foreach (var ingredient in @Model["ingredients"])
+  {
+    <li><form action = "/delete-ingredient-from-recipe" method="post">@ingredient.GetName() | <input hidden name="recipe-ingredient-name" value="@ingredient.GetId()"><input hidden name="recipe-update" value='@Model["recipe"].GetId()'><button type="submit" name="remove">remove</button></form></li>
+  }
+</ul>
 
-<!-- <Form action = '/recipe/@Model["recipe"].GetId()/add-ingredient' method = 'post'>
-  <label for="ingredient-name">Ingredient Name</label>
-  <input type="text" name="ingredient-name">
-
-  <button type="submit" name="name">add ingredient to recipe</button>
-</form> -->
-
+<h3>Categories:</h3>
 <ul>
 @foreach (var category in @Model["categories"])
 {
- <li>@category.GetName()</li>
+
+ <li><form action = "/delete-category-from-recipe" method="post">@category.GetName() | <input hidden name="recipe-category-name" value="@category.GetId()"><input hidden name="recipe-update" value='@Model["recipe"].GetId()'><button type="submit" name="remove">remove</button></form></li>
 }
 </ul>
 
@@ -29,8 +32,21 @@
   <select  name="add-category">
     @foreach (var category in @Model["allCategories"])
     {
+
       <option value = @category.GetId()>@category.GetName()</option>
     }
   </select>
   <button type="submit" name="name">add category to recipe</button>
 </form>
+
+<form action='/recipe/@Model["recipe"].GetId()/add-Ingredient' method = 'post'>
+  <select  name="add-ingredient">
+    @foreach (var ingredient in @Model["allIngredients"])
+    {
+
+      <option value = @ingredient.GetId()>@ingredient.GetName()</option>
+    }
+  </select>
+  <button type="submit" name="name">add key ingredient to recipe</button>
+</form>
+<a href="/">HOME</a>

@@ -98,7 +98,7 @@ namespace Cookbook.Objects
       testIngredient.Save();
 
       //Act
-      testRecipe.AddIngredient(testIngredient);
+      testRecipe.AddIngredient(testIngredient.GetId());
 
       List<Ingredient> result = testRecipe.GetIngredients();
       List<Ingredient> testList = new List<Ingredient>{testIngredient};
@@ -121,7 +121,7 @@ namespace Cookbook.Objects
       testIngredient2.Save();
 
       //Act
-      testRecipe.AddIngredient(testIngredient1);
+      testRecipe.AddIngredient(testIngredient1.GetId());
       List<Ingredient> result = testRecipe.GetIngredients();
       List<Ingredient> testList = new List<Ingredient> {testIngredient1};
 
@@ -140,7 +140,7 @@ namespace Cookbook.Objects
       testRecipe.Save();
 
       //Act
-      testRecipe.AddIngredient(testIngredient);
+      testRecipe.AddIngredient(testIngredient.GetId());
       testRecipe.Delete();
 
       List<Recipe> resultIngredientRecipes = testIngredient.GetRecipes();

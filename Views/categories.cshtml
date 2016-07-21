@@ -1,0 +1,17 @@
+<h2>Categories</h2>
+<ul>
+  @foreach (var category in @Model)
+{
+  <li><a href="/category/@category.GetId()">@category.GetName()</a></li>
+}
+</ul>
+
+<Form action = "add-category" method = "post">
+  <label for="category-name">Category Name</label>
+  <input type="text" name="category-name">
+  <button type="submit" name="name">add</button>
+</form>
+<a href="/">home</a>
+<form action="/delete-all-categories" method="post">
+  <button type="submit">Delete All</button>
+</form>

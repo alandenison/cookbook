@@ -1,0 +1,9 @@
+<h1> Recipes with Key Ingredients</h1>
+
+
+@foreach (var recipe in @Model["recipes"])
+{
+<li><a href="/recipe/@recipe.GetId()">@recipe.GetName()</a></li>
+}
+
+<a href="/">home</a>

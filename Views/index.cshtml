@@ -1,14 +1,38 @@
-<h1>Recipies</h1>
-<h2>Categories</h2>
+<link rel="stylesheet" href="../Content/css/styles.css" type="text/css">
+
+<h1 class="1">Recipies</h1>
 <ul>
-  @foreach (var category in @Model)
+  @foreach (var recipe in @Model)
 {
-  <li><a href="/category/@category.GetId()">@category.GetName()</a></li>
+    <li class='a-@recipe.GetRating()'><a href="/recipe/@recipe.GetId()">@recipe.GetName()</a> |
+
+      @for(int i = 0; i < @recipe.GetRating(); i++)
+      {
+        <span>&#9733</span>
+      }
+      </li>
 }
 </ul>
 
-<Form action = "add-category" method = "post">
-  <label for="category-name">Category Name</label>
-  <input type="text" name="category-name">
-  <button type="submit" name="name">add</button>
+
+
+<Form action = '/add-new-recipe' method = 'post'>
+  <h2>Add new recipe</h2>
+  <label for="recipe-name">Recipe Name</label>
+  <input type="text" name="recipe-name">
+<br>
+  <label for="recipe-description">Recipe Instructions</label>
+  <br>
+  <textarea rows = "20" name = "recipe-description"></textarea>
+<br>
+  <label for="recipe-rating">Recipe Rating</label>
+  <input type="number" min=1 max=5 name="recipe-rating">
+
+  <button type="submit" name="name">add recipe</button>
+</form>
+
+<a href="/categories">categories</a>
+<a href="/ingredients">ingredients</a>
+<form action="/delete-all-recipes" method="post">
+  <button type="submit">Delete All</button>
 </form>
