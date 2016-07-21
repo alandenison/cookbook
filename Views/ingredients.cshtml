@@ -2,7 +2,11 @@
 <ul>
   @foreach (var ingredient in @Model)
 {
-  <li><a href="/ingredient/@ingredient.GetId()">@ingredient.GetName()</a></li>
+  <li><a href="/ingredient/@ingredient.GetId()">@ingredient.GetName()</a>
+    <form action="/ingredient/delete" method="post">
+      <input hidden name="ingredient-name" value='@ingredient.GetId()'>
+      <button type="submit">Delete</button>
+    </form></li>
 }
 </ul>
 

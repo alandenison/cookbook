@@ -1,13 +1,23 @@
+<link rel="stylesheet" href="../Content/css/styles.css" type="text/css">
+
+<h1 class='a-@Model["recipe"].GetRating()'>@Model["recipe"].GetName() | @for(int i = 0; i < @Model["recipe"].GetRating(); i++)
+{
+  <span>&#9733</span>
+}</h1>
 <form action="/recipe/@Model["recipe"].GetId()/update" method = "post">
   <input type="hidden" name="_method" value="PATCH">
-<input type = "text" name = "recipe-name" value = '@Model["recipe"].GetName()'></input>
+
+<img src='@Model["recipe"].GetImage()' alt="" />
 <hr>
 <h2>INSTRUCTIONS:</h2>
+<input type = "text" name = "recipe-name" value = '@Model["recipe"].GetName()'></input>
+<br>
 <textarea rows = "20" name = "recipe-description">@Model["recipe"].GetDescription()</textarea>
 <br>
 
 <label for="rating">Rating:</rating>
-<input type="number" name="recipe-rating" value="@Model["recipe"].GetRating()">
+<input type="number" name="recipe-rating" value='@Model["recipe"].GetRating()'>
+new image link:<input type="text" name="recipe-image" value='@Model["recipe"].GetImage()'>
 <br><button type="submit">Update</button>
 </form>
 
@@ -48,5 +58,10 @@
     }
   </select>
   <button type="submit" name="name">add key ingredient to recipe</button>
+</form>
+<form action="/search" method="post">
+  <input name="recipe-search-name" value='@Model["recipe"].GetName()'>
+  <br><hr>
+  <button type="submit" name="button">SEARCH FOR SIMILAR RECIPES</button>
 </form>
 <a href="/">HOME</a>

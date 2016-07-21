@@ -5,9 +5,14 @@ using Nancy;
 namespace Cookbook
 {
   public class HomeModule : NancyModule
+
   {
+
+
     public HomeModule()
+
     {
+
       Get["/"] = _ => {
 
         return View["index.cshtml", Recipe.GetAll()];
@@ -28,7 +33,7 @@ namespace Cookbook
         return View["category.cshtml", model];
       };
       Post["/category/{id}/add-recipe"] = parameters => {
-        Recipe newRecipe = new Recipe(Request.Form["recipe-name"], Request.Form["recipe-description"], Request.Form["recipe-rating"]);
+        Recipe newRecipe = new Recipe(Request.Form["recipe-name"], Request.Form["recipe-description"], Request.Form["recipe-image"], Request.Form["recipe-rating"]);
         newRecipe.Save();
         int categoryId = parameters.id;
         Category categoryFound = Category.Find(categoryId);
@@ -38,6 +43,12 @@ namespace Cookbook
         model.Add("category", categoryFound);
         model.Add("recipes", CategoryRecipes);
         return View["category.cshtml", model];
+      };
+      Post["/category/delete"] = _ => {
+        int categoryId = Request.Form["category-name"];
+        Category categoryFound = Category.Find(categoryId);
+        categoryFound.Delete();
+        return View["categories.cshtml", Category.GetAll()];
       };
       Get["/categories"] = _ => {
         return View["/categories", Category.GetAll()];
@@ -69,7 +80,7 @@ namespace Cookbook
       Patch["/recipe/{id}/update"] = parameters => {
         int recipeId = parameters.id;
         Recipe SelectedRecipe = Recipe.Find(parameters.id);
-        SelectedRecipe.Update(Request.Form["recipe-name"], Request.Form["recipe-description"], Request.Form["recipe-rating"]);
+        SelectedRecipe.Update(Request.Form["recipe-name"], Request.Form["recipe-description"], Request.Form["recipe-rating"], Request.Form["recipe-image"]);
         return View["category-success.cshtml", recipeId];
       };
       Post["/delete-category-from-recipe"] = _ => {
@@ -87,7 +98,7 @@ namespace Cookbook
         return View["category-success.cshtml", recipeId];
       };
       Post["/add-new-recipe"] = parameter => {
-        Recipe newRecipe = new Recipe(Request.Form["recipe-name"], Request.Form["recipe-description"], Request.Form["recipe-rating"]);
+        Recipe newRecipe = new Recipe(Request.Form["recipe-name"], Request.Form["recipe-description"], Request.Form["recipe-rating"], Request.Form["recipe-image"]);
         newRecipe.Save();
         return View["/recipe-success.cshtml", newRecipe.GetId()];
       };
@@ -125,6 +136,25 @@ namespace Cookbook
         model.Add("ingredient", ingredientFound);
         model.Add("recipes", IngredientRecipes);
         return View["ingredient.cshtml", model];
+      };
+      Post["/ingredient/delete"] = _ => {
+        int ingredientId = Request.Form["ingredient-name"];
+        Ingredient ingredientFound = Ingredient.Find(ingredientId);
+        ingredientFound.Delete();
+        return View["ingredients.cshtml", Ingredient.GetAll()];
+      };
+      Post["/search"] = parameters => {
+        string searchWord = Request.Form["recipe-search-name"];
+        Console.WriteLine(searchWord);
+        string updatedWord = searchWord.Replace(" ", "+");
+        Console.WriteLine(updatedWord);
+        string searchName = ("http://www.recipe.com/search/?searchType=recipe&searchTerm=" + updatedWord);
+        return View["searchlink.cshtml", searchName];
+      };
+
+      Get["/searchlink"] = parameters => {
+
+        return View["searchlink.cshtml"];
       };
     }
   }

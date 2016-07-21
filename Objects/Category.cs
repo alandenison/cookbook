@@ -167,9 +167,9 @@ namespace Cookbook
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT recipes.* FROM categories JOIN recipe_category ON (categories.id = recipe_category.category_id) JOIN recipes ON (recipe_category.recipe_id = recipes.id) WHERE categories.id = @CategoryId", conn);
+      SqlCommand cmd = new SqlCommand("SELECT recipes.* FROM categories JOIN recipe_category ON (categories.id = recipe_category.category_id) JOIN recipes ON (recipe_category.recipe_id = recipes.id) WHERE categories.id = @CategoryId  ORDER BY rating DESC", conn);
       SqlParameter CategoryIdParam = new SqlParameter();
-      CategoryIdParam.ParameterName = "@CategoryId";
+      CategoryIdParam.ParameterName = "@CategoryId"; 
       CategoryIdParam.Value = this.GetId().ToString();
 
       cmd.Parameters.Add(CategoryIdParam);
@@ -184,7 +184,8 @@ namespace Cookbook
         string recipeName = rdr.GetString(1);
         string recipeDescription = rdr.GetString(2);
         int recipeRating = rdr.GetInt32(3);
-        Recipe newRecipe = new Recipe(recipeName, recipeDescription, recipeRating, recipeId);
+        string recipeImage = rdr.GetString(4);
+        Recipe newRecipe = new Recipe(recipeName, recipeDescription, recipeRating, recipeImage, recipeId);
         recipes.Add(newRecipe);
       }
 

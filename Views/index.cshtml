@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="../Content/css/styles.css" type="text/css">
 
-<h1 class="1">Recipies</h1>
+<h1>Recipies</h1>
 <ul>
   @foreach (var recipe in @Model)
 {
@@ -27,6 +27,9 @@
 <br>
   <label for="recipe-rating">Recipe Rating</label>
   <input type="number" min=1 max=5 name="recipe-rating">
+
+  <label for="recipe-image">Recipe Image URL=</label>
+  <input type="text" name="recipe-image">
 
   <button type="submit" name="name">add recipe</button>
 </form>

@@ -2,7 +2,11 @@
 <ul>
   @foreach (var category in @Model)
 {
-  <li><a href="/category/@category.GetId()">@category.GetName()</a></li>
+  <li><a href="/category/@category.GetId()">@category.GetName()</a> |
+  <form action="/category/delete" method="post">
+    <input hidden name="category-name" value='@category.GetId()'>
+    <button type="submit">Delete</button>
+  </form></li>
 }
 </ul>
 

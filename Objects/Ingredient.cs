@@ -166,7 +166,7 @@ namespace Cookbook
       SqlDataReader rdr = null;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT recipe_id FROM recipe_ingredients WHERE ingredient_id = @IngredientId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT recipe_id FROM recipe_ingredients WHERE ingredient_id = @IngredientId ;", conn);
       SqlParameter ingredientIdParameter = new SqlParameter();
       ingredientIdParameter.ParameterName = "@IngredientId";
       ingredientIdParameter.Value = this.GetId();
@@ -189,7 +189,7 @@ namespace Cookbook
       foreach (int recipeId in recipeIds)
       {
         SqlDataReader queryReader = null;
-        SqlCommand recipeQuery = new SqlCommand("SELECT * FROM recipes WHERE id = @RecipeId;", conn);
+        SqlCommand recipeQuery = new SqlCommand("SELECT * FROM recipes WHERE id = @RecipeId SORT BY ;", conn);
 
         SqlParameter recipeIdParameter = new SqlParameter();
         recipeIdParameter.ParameterName = "@RecipeId";
@@ -203,7 +203,8 @@ namespace Cookbook
           string recipeName = queryReader.GetString(1);
           string recipeDescription = queryReader.GetString(2);
           int recipeRating = queryReader.GetInt32(3);
-          Recipe foundRecipe = new Recipe(recipeName, recipeDescription, recipeRating, thisRecipeId);
+          string recipeImage = queryReader.GetString(4);
+          Recipe foundRecipe = new Recipe(recipeName, recipeDescription, recipeRating, recipeImage, thisRecipeId);
           recipes.Add(foundRecipe);
         }
         if (queryReader != null)
@@ -213,6 +214,6 @@ namespace Cookbook
       }
       return recipes;
     }
-    
+
   }
 }

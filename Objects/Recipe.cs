@@ -10,13 +10,15 @@ namespace Cookbook
     private string _name;
     private string _description;
     private int _rating;
+    private string _image;
 
-    public Recipe(string Name, string Description, int Rating, int Id = 0)
+    public Recipe(string Name, string Description, int Rating, string Image, int Id = 0)
     {
       _id = Id;
       _name = Name;
       _description = Description;
       _rating = Rating;
+      _image = Image;
     }
     public override bool Equals(System.Object otherRecipe)
     {
@@ -31,7 +33,8 @@ namespace Cookbook
           bool nameEquality = this.GetName() == newRecipe.GetName();
           bool descriptionEquality = this.GetDescription() == newRecipe.GetDescription();
           bool ratingEquality = this.GetRating() == newRecipe.GetRating();
-          return (idEquality && nameEquality && descriptionEquality && ratingEquality);
+          bool imageEquality = this.GetImage() == newRecipe.GetImage();
+          return (idEquality && nameEquality && descriptionEquality && ratingEquality && imageEquality);
         }
     }
     public int GetId()
@@ -41,6 +44,14 @@ namespace Cookbook
     public string GetName()
     {
       return _name;
+    }
+    public string GetImage()
+    {
+      return _image;
+    }
+    public void SetString(string newImage)
+    {
+      _image = newImage;
     }
     public void SetName(string newName)
     {
@@ -79,7 +90,8 @@ namespace Cookbook
         string recipeName = rdr.GetString(1);
         string recipeDescription = rdr.GetString(2);
         int recipeRating = rdr.GetInt32(3);
-        Recipe newRecipe = new Recipe(recipeName, recipeDescription, recipeRating, recipeId);
+        string recipeImage = rdr.GetString(4);
+        Recipe newRecipe = new Recipe(recipeName, recipeDescription, recipeRating, recipeImage, recipeId);
         allRecipes.Add(newRecipe);
       }
       if (rdr != null)
@@ -99,7 +111,7 @@ namespace Cookbook
       SqlDataReader rdr;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO recipes (name, description, rating) OUTPUT INSERTED.id VALUES (@RecipeName, @RecipeDescription, @RecipeRating);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO recipes (name, description, rating, image) OUTPUT INSERTED.id VALUES (@RecipeName, @RecipeDescription, @RecipeRating, @RecipeImage);", conn);
 
       SqlParameter nameParameter = new SqlParameter();
       nameParameter.ParameterName = "@RecipeName";
@@ -113,9 +125,14 @@ namespace Cookbook
       ratingParameter.ParameterName = "@RecipeRating";
       ratingParameter.Value = this.GetRating();
 
+      SqlParameter imageParameter = new SqlParameter();
+      imageParameter.ParameterName = "@RecipeImage";
+      imageParameter.Value = this.GetImage();
+
       cmd.Parameters.Add(nameParameter);
       cmd.Parameters.Add(descriptionParameter);
       cmd.Parameters.Add(ratingParameter);
+      cmd.Parameters.Add(imageParameter);
       rdr = cmd.ExecuteReader();
 
       while(rdr.Read())
@@ -173,6 +190,7 @@ namespace Cookbook
       int foundRecipeId = 0;
       string foundRecipeName = null;
       string foundRecipeDescription = null;
+      string foundRecipeImage = null;
       int foundRecipeRating = 0;
 
       while(rdr.Read())
@@ -181,8 +199,9 @@ namespace Cookbook
         foundRecipeName = rdr.GetString(1);
         foundRecipeDescription = rdr.GetString(2);
         foundRecipeRating = rdr.GetInt32(3);
+        foundRecipeImage = rdr.GetString(4);
       }
-      Recipe foundRecipe = new Recipe(foundRecipeName, foundRecipeDescription, foundRecipeRating, foundRecipeId);
+      Recipe foundRecipe = new Recipe(foundRecipeName, foundRecipeDescription, foundRecipeRating, foundRecipeImage, foundRecipeId);
 
       if (rdr != null)
       {
@@ -395,13 +414,13 @@ namespace Cookbook
       }
       return categories;
     }
-    public void Update(string newName, string newDescription, int newRating)
+    public void Update(string newName, string newDescription, int newRating, string newImage)
     {
       SqlConnection conn = DB.Connection();
       SqlDataReader rdr;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("UPDATE recipes SET name = @NewName, description = @NewDescription, rating = @NewRating OUTPUT INSERTED.name, INSERTED.description, INSERTED.rating WHERE id = @RecipeId;", conn);
+      SqlCommand cmd = new SqlCommand("UPDATE recipes SET name = @NewName, description = @NewDescription, rating = @NewRating, image = @NewImage OUTPUT INSERTED.name, INSERTED.description, INSERTED.rating, INSERTED.image WHERE id = @RecipeId;", conn);
 
       SqlParameter newNameParameter = new SqlParameter();
       newNameParameter.ParameterName = "@NewName";
@@ -418,6 +437,10 @@ namespace Cookbook
       newRatingParameter.Value = newRating;
       cmd.Parameters.Add(newRatingParameter);
 
+      SqlParameter newImageParameter = new SqlParameter();
+      newImageParameter.ParameterName = "@NewImage";
+      newImageParameter.Value = newImage;
+      cmd.Parameters.Add(newImageParameter);
 
       SqlParameter recipeIdParameter = new SqlParameter();
       recipeIdParameter.ParameterName = "@RecipeId";
@@ -430,6 +453,7 @@ namespace Cookbook
         this._name = rdr.GetString(0);
         this._description = rdr.GetString(1);
         this._rating = rdr.GetInt32(2);
+        this._image = rdr.GetString(3);
       }
 
       if (rdr != null)
@@ -442,5 +466,6 @@ namespace Cookbook
         conn.Close();
       }
     }
+
   }
 }
